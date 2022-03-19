@@ -5,34 +5,24 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 import java.util.*;
 
 @Entity
-@Table(name = "users", indexes = {@Index(columnList = "name, last_name ASC")})
+@Table(name = "users")
 public final class User extends AbstractEntity<Long> implements UserDetails {
     private static final long serialVersionUID = 2715270014679085151L;
 
     @Column(name = "name")
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 2, max = 30, message = "Name should be between 2 to 30")
     private String firstName;
 
     @Column(name = "last_name")
     private String lastName;
 
     @Column(unique = true)
-    @NotEmpty(message = "Email should not be empty")
-    @Email(message = "Email should be valid")
     private String email;
 
-    @NotEmpty(message = "Password should not be empty")
     private String password;
 
-    @Positive(message = "Age should not be empty")
     private int age;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -120,7 +110,7 @@ public final class User extends AbstractEntity<Long> implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Set<Role> getAuthorities() {
         return roles;
     }
 

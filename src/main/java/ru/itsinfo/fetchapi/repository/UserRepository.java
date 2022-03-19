@@ -1,12 +1,22 @@
 package ru.itsinfo.fetchapi.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.userdetails.UserDetails;
 import ru.itsinfo.fetchapi.model.User;
 
+import java.util.List;
 import java.util.Optional;
 
+public interface UserRepository {
+    List<User> findAll();
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<UserDetails> findByEmail(String email);
+    Optional<User> findById(Long id);
+
+    Optional<User> findByEmail(String email);
+
+    User save(User entity);
+
+    void deleteById(Long id);
+
+    User findByName(String name);
+
+    User update(User user);
 }

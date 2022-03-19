@@ -16,9 +16,9 @@ spring:
     name: JM Spring Boot Security with Fetch API
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/spring_security?verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Europe/Moscow&useLegacyDatetimeCode=false
+    url: jdbc:mysql://localhost:3306/security?verifyServerCertificate=false&useSSL=false&requireSSL=false&serverTimezone=Europe/Moscow&useLegacyDatetimeCode=false
     username: root
-    password: root
+    password: rashot-8937561
   jpa:
     generate-ddl: true
     show-sql: true
