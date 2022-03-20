@@ -17,14 +17,12 @@ public class RoleRepositoryImpl implements RoleRepository {
 
     @Override
     public List<Role> findAll() {
-        return entityManager.createQuery("from Role", Role.class).getResultList();
+        return entityManager.createQuery("select r from Role r", Role.class).getResultList();
     }
 
     public Role findRoleByAuthority(String authority) throws NoSuchElementException {
-        return findAll().stream()
-                .filter(r -> authority.equals(r.getAuthority()))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(String.format("Role %s not found", authority)));
+        return entityManager.createQuery("select r from Role r WHERE r.name =:name", Role.class)
+                .setParameter("name", authority).getSingleResult();
     }
     @Transactional
     public Role save(Role role){
@@ -32,7 +30,7 @@ public class RoleRepositoryImpl implements RoleRepository {
         entityManager.merge(role);
         return role;
     }
-    public Role getById(int id) {
+    public Role getById(Long id) {
         return entityManager.createQuery("select r from Role r WHERE r.id =:id", Role.class)
                 .setParameter("id", id).getSingleResult();
     }

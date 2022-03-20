@@ -25,8 +25,4 @@ public class ApplicationController {
         return appService.getPage(model, session, auth);
     }
 
-    @GetMapping("/access-denied")
-    public String accessDenied() {
-        return "access-denied-page";
-    }
 }

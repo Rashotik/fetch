@@ -1,4 +1,4 @@
-package ru.itsinfo.fetchapi.config.handler;
+package ru.itsinfo.fetchapi.config;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;

@@ -252,6 +252,13 @@ function loadUserForInsertForm() {
 
 function insertUser() {
     _eraseUserAddForm();
+    if( !userAddFormId.find('#newfirstName').val() ||
+        !userAddFormId.find('#newlastName').val() ||
+        userAddFormId.find('#newage').val() == 0 ||
+        !userAddFormId.find('#newemail').val() ||
+        !userAddFormId.find('#newpassword').val() ||
+        !userAddFormId.find('#newroles').val())
+            return false;
 
     let headers = new Headers();
     headers.append('Content-Type', 'application/json; charset=utf-8');
@@ -263,6 +270,7 @@ function insertUser() {
         'password': userAddFormId.find('#newpassword').val(),
         'roles': userAddFormId.find('#newroles').val().map(roleId => parseInt(roleId))
     };
+
     let request = new Request('/api/users/', {
         method: 'POST',
         headers: headers,
@@ -273,23 +281,6 @@ function insertUser() {
         .then(function (response) {
             response.json().then(function (userData) {
                 console.log(userData);
-
-                if (response.status === 409) {
-                    userData.fieldErrors.forEach(error => {
-                        userAddFormId.find('#new' + error.field)
-                            .addClass('is-invalid')
-                            .parent().append($('<div class="invalid-feedback">').text(error.defaultMessage));
-                    });
-                    console.warn('Error: ' + userData.message);
-                    return false;
-                }
-                if (response.status === 400) {
-                    userAddFormId.find('#newemail')
-                        .addClass('is-invalid')
-                        .parent().append($('<div class="invalid-feedback">').text('E-mail must be unique'));
-                    console.warn("Error message: " + userData.message);
-                    return false;
-                }
 
                 loadUsersTable();
                 console.info("User with id = " + userData.id + " was inserted");

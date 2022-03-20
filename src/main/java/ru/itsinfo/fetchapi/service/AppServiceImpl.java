@@ -5,6 +5,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,31 +15,24 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import ru.itsinfo.fetchapi.exception.UserDataIntegrityViolationException;
-import ru.itsinfo.fetchapi.exception.UserNotFoundException;
-import ru.itsinfo.fetchapi.exception.UserValidationException;
 import ru.itsinfo.fetchapi.model.Role;
 import ru.itsinfo.fetchapi.model.User;
 import ru.itsinfo.fetchapi.repository.RoleRepository;
 import ru.itsinfo.fetchapi.repository.UserRepository;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class AppServiceImpl implements AppService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public AppServiceImpl(UserRepository userRepository,
-                          RoleRepository roleRepository,
-                          PasswordEncoder passwordEncoder) {
+                          RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -69,35 +64,37 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("Username %s not found", email))
-        );
+        User user = userRepository.findByEmail(email).get();
+
+        UserDetails u = new User(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getAge(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getAuthorities());
+        return u;
     }
 
     @Override
     public List<User> findAllUsers() {
-        return userRepository.findAll(Sort.by(Sort.Direction.ASC, "firstName", "lastName"));
+        return userRepository.findAll();
     }
 
     @Override
     public User getOneUser(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+        return userRepository.findById(id).orElse(new User());
     }
 
     @Override
     public User insertUser(User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new UserValidationException(user, bindingResult.getFieldErrors(), "User's fields has errors");
-        }
 
         String oldPassword = user.getPassword();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(user.getPassword());
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
             user.setPassword(oldPassword);
-            throw new UserDataIntegrityViolationException(user, e.getMessage());
         }
 
         return user;
@@ -107,21 +104,21 @@ public class AppServiceImpl implements AppService {
     public User updateUser(User user, BindingResult bindingResult) {
         bindingResult = checkBindingResultForPasswordField(bindingResult);
 
-        if (bindingResult.hasErrors()) {
-            throw new UserValidationException(user, bindingResult.getFieldErrors(), "User's fields has errors");
-        }
 
         String oldPassword = user.getPassword();
         user.setPassword(user.getPassword().isEmpty() ?
                 getOneUser(user.getId()).getPassword() :
-                passwordEncoder.encode(user.getPassword()));
+                user.getPassword());
+        Set<Role> roles = new HashSet<>();
+        for (Role role: user.getAuthorities()) {
+            roles.add(roleRepository.getById(role.getId()));
+        }
+        user.setRoles(roles);
         try {
-            user = userRepository.save(user);
+            user = userRepository.update(user);
         } catch (DataIntegrityViolationException e) {
             user.setPassword(oldPassword);
-            throw new UserDataIntegrityViolationException(user, e.getMessage());
         }
-
         return user;
     }
 

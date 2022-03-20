@@ -9,6 +9,7 @@ import ru.itsinfo.fetchapi.model.Role;
 import ru.itsinfo.fetchapi.model.User;
 import ru.itsinfo.fetchapi.service.AppService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,12 +33,12 @@ public class ApplicationRestController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> insert( @RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<User> insert(@Valid @RequestBody User user, BindingResult bindingResult) {
         return ResponseEntity.ok(appService.insertUser(user, bindingResult));
     }
 
     @PutMapping("/users")
-    public ResponseEntity<User> update( @RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<User> update(@Valid @RequestBody User user, BindingResult bindingResult) {
         return ResponseEntity.ok(appService.updateUser(user, bindingResult));
     }
 

@@ -1,6 +1,7 @@
 package ru.itsinfo.fetchapi.model;
 
 
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,8 +10,10 @@ import java.util.*;
 
 @Entity
 @Table(name = "users")
-public final class User extends AbstractEntity<Long> implements UserDetails {
-    private static final long serialVersionUID = 2715270014679085151L;
+public final class User implements UserDetails {
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name")
     private String firstName;
@@ -143,5 +146,19 @@ public final class User extends AbstractEntity<Long> implements UserDetails {
     public String toString() {
         return String.format("User [id = %d; firstName = %s; lastName = %s; email = %s; password = %s; roles = (%s)]",
                 this.getId(), firstName, lastName, email, password, Collections.singletonList(roles));
+    }
+
+    @Nullable
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Transient
+    public boolean isNew() {
+        return null == getId();
     }
 }

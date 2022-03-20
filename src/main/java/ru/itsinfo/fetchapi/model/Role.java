@@ -1,5 +1,6 @@
 package ru.itsinfo.fetchapi.model;
 
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -8,8 +9,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "roles")
-public final class Role extends AbstractEntity<Integer> implements GrantedAuthority {
-    private static final long serialVersionUID = 7217778059836250424L;
+public final class Role implements GrantedAuthority {
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    private Long id;
+
 
     @Column(unique = true)
     private String name;
@@ -24,7 +29,7 @@ public final class Role extends AbstractEntity<Integer> implements GrantedAuthor
         this.name = name;
     }
 
-    public Role(Integer id) {
+    public Role(Long id) {
         this.setId(id);
     }
 
@@ -45,4 +50,18 @@ public final class Role extends AbstractEntity<Integer> implements GrantedAuthor
     public String toString() {
         return String.format("Role [id = %d; name = %s;]", this.getId(), name);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Transient
+    public boolean isNew() {
+        return null == getId();
+    }
+
 }

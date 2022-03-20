@@ -1,7 +1,18 @@
 package ru.itsinfo.fetchapi.repository;
 
-import org.springframework.data.repository.CrudRepository;
 import ru.itsinfo.fetchapi.model.Role;
 
-public interface RoleRepository extends CrudRepository<Role, Integer> {
+import java.util.List;
+import java.util.NoSuchElementException;
+
+public interface RoleRepository {
+    List<Role> findAll();
+
+    Role findRoleByAuthority(String authority) throws NoSuchElementException;
+
+    Role save(Role role);
+
+    Role getById(Long id);
+
+    List<Role> getByName(String name);
 }

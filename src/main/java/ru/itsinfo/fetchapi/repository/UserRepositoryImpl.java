@@ -26,14 +26,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
     @Override
     public User findByName(String name) {
-        TypedQuery<User> query = entityManager.createQuery("select u from User u where u.name = :name", User.class);
+        TypedQuery<User> query = entityManager.createQuery("select u from User u where u.firstName = :name", User.class);
         query.setParameter("name", name);
         return query.getSingleResult();
     }
 
     @Override
     public List<User> findAll() {
-        return entityManager.createQuery("from User", User.class).getResultList();
+        return entityManager.createQuery("select u from User u", User.class).getResultList();
     }
 
     @Override
@@ -54,7 +54,6 @@ public class UserRepositoryImpl implements UserRepository {
     @Transactional
     public User update(User updatedUser) {
         entityManager.merge(updatedUser);
-        System.out.println(updatedUser.getRoles() + "inside");
         return updatedUser;
     }
 

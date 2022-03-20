@@ -20,32 +20,30 @@ public class PreloadDatabase {
 
     @Bean
     CommandLineRunner initDatabase(RoleRepository roleRepository,
-                                   UserRepository userRepository,
-                                   PasswordEncoder passwordEncoder) {
+                                   UserRepository userRepository) {
         return args -> {
             Role roleAdmin = new Role("ROLE_ADMIN");
             Role roleUser = new Role("ROLE_USER");
 
-            log.info("Preloading " + roleRepository.save(roleAdmin));
-            log.info("Preloading " + roleRepository.save(roleUser));
-            log.info("Preloading " + roleRepository.save(new Role("ROLE_GUEST")));
+            roleRepository.save(roleAdmin);
+            roleRepository.save(roleUser);
 
-            log.info("Preloading " + userRepository.save(new User("Василий", "Уткин", 49, "admin@mail.com",
-                    passwordEncoder.encode("admin"),
+            userRepository.save(new User("root", "rootov", 49, "root@root.asd",
+                    "root",
                     new HashSet<>() {{
                         add(roleAdmin);
                         add(roleUser);
-                    }})));
-            log.info("Preloading " + userRepository.save(new User("Дмитрий", "Губерниев", 46, "user@mail.com",
-                    passwordEncoder.encode("user"),
+                    }}));
+            userRepository.save(new User("user", "userov", 46, "user@user.asd",
+                    "user",
                     new HashSet<>() {{
                         add(roleUser);
-                    }})));
-            log.info("Preloading " + userRepository.save(new User("123", "456", 20, "guest@mail.com",
-                    passwordEncoder.encode("guest"),
+                    }}));
+            userRepository.save(new User("some", "one", 20, "some@one.user",
+                    "guest",
                     new HashSet<>() {{
                         add(roleUser);
-                    }})));
+                    }}));
         };
     }
 }
