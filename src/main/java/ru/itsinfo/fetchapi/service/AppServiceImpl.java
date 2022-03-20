@@ -90,7 +90,6 @@ public class AppServiceImpl implements AppService {
     public User insertUser(User user, BindingResult bindingResult) {
 
         String oldPassword = user.getPassword();
-        user.setPassword(user.getPassword());
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException e) {

@@ -1,5 +1,7 @@
 package ru.itsinfo.fetchapi.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.itsinfo.fetchapi.model.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -16,6 +18,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -45,6 +49,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User save(User entity) {
         entity.setPassword(entity.getPassword());
+        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         try {
             entityManager.persist(entity);
             entityManager.flush();
