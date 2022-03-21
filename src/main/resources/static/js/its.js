@@ -252,12 +252,13 @@ function loadUserForInsertForm() {
 
 function insertUser() {
     _eraseUserAddForm();
+    console.log(userAddFormId.find('#newage').val());
     if( !userAddFormId.find('#newfirstName').val() ||
         !userAddFormId.find('#newlastName').val() ||
-        userAddFormId.find('#newage').val() == 0 ||
+        userAddFormId.find('#newage').val() === 0 ||
         !userAddFormId.find('#newemail').val() ||
         !userAddFormId.find('#newpassword').val() ||
-        !userAddFormId.find('#newroles').val())
+        userAddFormId.find('#newroles').val().length === 0)
             return false;
 
     let headers = new Headers();
